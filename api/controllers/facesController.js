@@ -23,41 +23,33 @@ exports.delete_face = function(req, res) {
     });
 };
 
-// assign faces from person 1 to person 2
+// merge operation to assign faces from person 1 to person 2
 exports.assign_faces_to = function(req, res) {
-    var personGroupId = req.params.personGroupId;
-    var personGroupId2 = req.params.personGroupId2;
-    var personId = req.params.personId;
-    var personId2 = req.params.personId2;
+    // get face ids from person 1
+    get_person_faces(req, res, function(result){
+        var numFaces = result.length;
+        //TODO: add faces from person 1 to person 2
+        for(var i = 0; i < numFaces; i++) {
 
-    //TODO
+        }
+        //TODO: delete person 1
+    });
 };
 
-exports.get_person_faces = function(req, res) {
+
+var get_person_faces = function(req, res, next) {
     var api_url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" + req.params.personGroupId + "/persons/" + req.params.personId;
     request.get({
         headers: {'content-type' : 'application/json', 'Ocp-Apim-Subscription-Key' : api_key},
         url: api_url,
     }, function(error, response, body){
+        var result;
         if(error) {
             console.log(error);
         } else {
-            res.json(JSON.parse(body).persistedFaceIds);
+            result = JSON.parse(body).persistedFaceIds;
+            res.json(result);
         }
-    });
-};
-
-exports.list_all_persons = function(req, res) {
-    var api_url = "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/" + req.params.personGroupId + "/persons";
-    request.get({
-        headers: {'content-type' : 'application/json', 'Ocp-Apim-Subscription-Key' : api_key},
-        url: api_url,
-    }, function(error, response, body){
-        if(error) {
-            console.log(error);
-        } else {
-            console.log(response.body);
-            res.json(response.body);
-        }
+        next(result);
     });
 };
